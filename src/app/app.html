@@ -8,7 +8,7 @@
   <div class="drawer-content flex min-h-dvh flex-col bg-base-200">
     <main class="flex flex-1 flex-col items-center justify-center gap-4 p-4">
       <h1 class="text-center text-2xl font-semibold text-base-content">
-        {{ title() }}
+        AgUiDemo
       </h1>
       <label for="chat-drawer" class="btn btn-primary drawer-button">
         Open chat
@@ -22,64 +22,6 @@
       class="drawer-overlay"
       aria-label="Close chat"
     ></label>
-    <aside
-      class="flex min-h-full w-full max-w-md flex-col bg-base-200"
-    >
-      <div class="shrink-0 border-b border-base-300 bg-base-100 px-4 py-3">
-        <h2 class="font-semibold text-base-content">Chat</h2>
-      </div>
-      <div class="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
-        @for (msg of messages(); track msg.id) {
-          <div
-            class="chat"
-            [class.chat-start]="msg.side === 'start'"
-            [class.chat-end]="msg.side === 'end'"
-          >
-            @if (msg.avatarUrl) {
-              <div class="chat-image avatar">
-                <div class="w-10 rounded-full">
-                  <img [alt]="msg.avatarAlt ?? ''" [src]="msg.avatarUrl" />
-                </div>
-              </div>
-            }
-            @if (msg.header) {
-              <div class="chat-header">
-                {{ msg.header.label }}
-                <time class="text-xs opacity-50">{{ msg.header.time }}</time>
-              </div>
-            }
-            <div
-              class="chat-bubble whitespace-pre-line"
-              [class.chat-bubble-primary]="msg.bubbleVariant === 'primary'"
-              [class.chat-bubble-neutral]="msg.bubbleVariant === 'neutral'"
-            >
-              {{ msg.text }}
-            </div>
-            @if (msg.footer) {
-              <div class="chat-footer opacity-50">{{ msg.footer }}</div>
-            }
-          </div>
-        }
-      </div>
-      <div
-        class="shrink-0 border-t border-base-300 bg-base-100 p-4"
-      >
-        <textarea
-          class="textarea textarea-bordered w-full"
-          rows="3"
-          placeholder="Type a message… (Shift+Enter for new line)"
-          [value]="draft()"
-          (input)="onDraftInput($event)"
-          (keydown.enter)="onComposerEnter($event)"
-        ></textarea>
-        <button
-          type="button"
-          class="btn btn-primary mt-2 w-full"
-          (click)="sendMessage()"
-        >
-          Send
-        </button>
-      </div>
-    </aside>
+    <app-chat />
   </div>
 </div>

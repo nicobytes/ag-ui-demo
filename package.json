@@ -23,6 +23,7 @@
     "@hashbrownai/angular": "^0.4.1",
     "@hashbrownai/core": "^0.4.1",
     "@hashbrownai/google": "^0.4.1",
+    "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

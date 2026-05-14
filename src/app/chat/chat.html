@@ -1,0 +1,60 @@
+<aside class="flex min-h-0 min-w-0 flex-1 flex-col bg-base-200">
+  <div class="shrink-0 border-b border-base-300 bg-base-100 px-4 py-3">
+    <h2 class="font-semibold text-base-content">Chat</h2>
+  </div>
+  <div class="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+    @for (message of chat.value(); track $index) {
+      <p>{{ message.content }}</p>
+    }
+    <!-- Messages -->
+     <!--
+    <div class="chat chat-start">
+      <div class="chat-image avatar">
+        <div class="w-10 rounded-full">
+          <img
+            alt="Assistant"
+            src="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
+          />
+        </div>
+      </div>
+      <div class="chat-header">
+        Assistant
+        <time class="text-xs opacity-50">09:41</time>
+      </div>
+      <div class="chat-bubble chat-bubble-primary whitespace-pre-line">
+        Hi — this is a sample assistant bubble.
+        You can use multiple lines.
+      </div>
+      <div class="chat-footer opacity-50">Gemini preview</div>
+    </div>
+
+    <div class="chat chat-end">
+      <div class="chat-image avatar">
+        <div class="w-10 rounded-full">
+          <img
+            alt="You"
+            src="https://img.daisyui.com/images/profile/demo/anakeen@192.webp"
+          />
+        </div>
+      </div>
+      <div class="chat-bubble chat-bubble-neutral whitespace-pre-line">
+        Sounds good, thanks.
+      </div>
+      <div class="chat-footer opacity-50">Sent</div>
+    </div>
+    -->
+    <!-- End Messages -->
+  </div>
+  <div
+    class="shrink-0 border-t border-base-300 bg-base-100 p-4"
+  >
+    <textarea
+      class="textarea textarea-bordered w-full"
+      rows="3"
+      placeholder="Type a message… (Shift+Enter for new line)"
+      [value]="userMessage()"
+      (input)="userMessage.set($any($event.target).value)"
+    ></textarea>
+    <button class="mt-2 btn btn-primary btn-block" type="button" (click)="sendMessage()">Send</button>
+  </div>
+</aside>

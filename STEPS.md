@@ -1,25 +1,22 @@
-### Generative UI using Hashbrown + Angular
+## Generative UI using Hashbrown + Angular
 
-1. Install Hashbrown packages
+### 1. Install Hashbrown packages
 
 ```bash  
 npm install @hashbrownai/{core,angular,google} --save
 npm install @hashbrownai/{core,angular,openai} --save
 ```
 
-2. Server config:
+### 2. Server config:
 
 ```ts
 // server.ts
 import { HashbrownGoogle } from '@hashbrownai/google';
-import express from 'express';
 
-const app = express();
 app.use(express.json());
-
-app.post('/chat', async (req, res) => {
+app.post('/api/chat', async (req, res) => {
   const stream = HashbrownGoogle.stream.text({
-    apiKey: process.env.GOOGLE_API_KEY!,
+    apiKey: process.env['GOOGLE_API_KEY'] ?? '',
     request: req.body, // must be Chat.Api.CompletionCreateParams
   });
 
@@ -31,11 +28,17 @@ app.post('/chat', async (req, res) => {
 
   res.end();
 });
-
-app.listen(3000);
 ```
 
-3. Client config:
+### 3. Config your environment variables:
+
+// .env
+
+```
+GOOGLE_API_KEY=your-google-api-key
+```
+
+### 4. Client config:
 
 ```ts
 import { provideHashbrown } from '@hashbrownai/angular';
@@ -49,7 +52,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-4. Use chatResource:
+### 5. Use chatResource:
 
 ```ts
 import { chatResource } from '@hashbrownai/angular';
@@ -63,41 +66,35 @@ import { chatResource } from '@hashbrownai/angular';
   `,
 })
 export class App {
-  // 2. Generate the messages from a prompt
   chat = chatResource({
-    model: 'gemini-3-flash-preview',
+    model: 'gemini-2.5-flash',
     system: 'hashbrowns should be covered and smothered',
-    messages: [
-      { role: 'user', content: 'Write a short story about breakfast.' },
-    ],
+    messages: [],
   });
 }
 ```
 
-5. Send messages:
-
+### 6. Send messages:
 
 ```ts
 import { chatResource } from '@hashbrownai/angular';
 
 @Component({
   template: `
-    <div>
-      <input
-        type="text"
-        [value]="userMessage()"
-        (input)="userMessage.set($any($event.target).value)"
-        (keydown.enter)="send()"
-        placeholder="Prompt..."
-      />
-      <button (click)="send()">Send</button>
-    </div>
+    <textarea
+      class="textarea textarea-bordered w-full"
+      rows="3"
+      placeholder="Type a message… (Shift+Enter for new line)"
+      [value]="userMessage()"
+      (input)="userMessage.set($any($event.target).value)"
+    ></textarea>
+    <button class="mt-2 btn btn-primary btn-block" type="button" (click)="sendMessage()">Send</button>
   `,
 })
 export class App {
-  userMessage = input<string>('');
+  userMessage = model<string>('');
 
-  send() {
+  sendMessage() {
     if (this.userMessage().trim()) {
       this.chat.sendMessage({ role: 'user', content: this.userMessage() });
       this.userMessage.set('');
@@ -105,3 +102,5 @@ export class App {
   }
 }
 ```
+
+
