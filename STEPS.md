@@ -47,6 +47,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideHashbrown({
       baseUrl: '/api/chat',
+      emulateStructuredOutput: true,
     }),
   ],
 };
@@ -68,8 +69,7 @@ import { chatResource } from '@hashbrownai/angular';
 export class App {
   chat = chatResource({
     model: 'gemini-2.5-flash',
-    system: 'hashbrowns should be covered and smothered',
-    messages: [],
+    system: 'You are a helpful assistant that can answer questions and help with tasks.',
   });
 }
 ```
@@ -77,42 +77,141 @@ export class App {
 ### 6. Send messages:
 
 ```ts
-import { exposeComponent } from '@hashbrownai/angular';
-import { s } from '@hashbrownai/core';
-import { marked } from 'marked';
-
-import {
-    Component,
-    ViewEncapsulation,
-    computed,
-    inject,
-    input,
-    SecurityContext
-} from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { chatResource } from '@hashbrownai/angular';
 
 @Component({
-    selector: 'app-markdown',
-    encapsulation: ViewEncapsulation.None,
-    template: ` <div class="ai-markdown" [innerHTML]="html()"></div>`,
-    styleUrls: ['./markdown.component.css'],
+  template: `
+    <div>
+      <textarea
+        class="textarea textarea-bordered w-full"
+        rows="3"
+        placeholder="Type a message… (Shift+Enter for new line)"
+        [value]="userMessage()"
+        (input)="userMessage.set($any($event.target).value)"
+      ></textarea>
+      <button
+        class="mt-2 btn btn-primary btn-block"
+        type="button" (click)="sendMessage()">Send</button>
+    </div>
+    <div>
+      @for (message of chat.value(); track $index) {
+        <p>{{ message.content }}</p>
+      }
+    </div>
+  `,
 })
-export class MarkdownComponent {
-    private readonly sanitizer = inject(DomSanitizer);
+export class App {
+  userMessage = signal<string>('');
 
-    readonly data = input.required<string>();
-
-    readonly html = computed(() => {
-        const parsed = marked.parse(this.data(), { async: false }) as string;
-        return this.sanitizer.sanitize(SecurityContext.HTML, parsed) ?? '';
-    });
-}
-
-export const AiMarkdownComponent = exposeComponent(MarkdownComponent, {
-    description: 'Show markdown to the user',
-    input: {
-        data: s.streaming.string('The markdown content')
+  sendMessage() {
+    if (this.userMessage().trim()) {
+      this.chat.sendMessage({ role: 'user', content: this.userMessage() });
+      this.userMessage.set('');
     }
-});
+  }
+}
+```
 
+### 7. Identify the role of the message:
+
+```html
+@for (message of chat.value(); track $index) {
+@switch (message.role) {
+  @case ('user') {
+    <div class="chat chat-end">
+      <div class="chat-header">
+        User
+      </div>
+      <div class="chat-bubble chat-bubble-primary whitespace-pre-line">
+        <p>{{ message.content }}</p>
+      </div>
+    </div>
+  }
+  @case ('assistant') {
+    <div class="chat chat-start">
+      <div class="chat-header">
+        Assistant
+      </div>
+      <div class="chat-bubble chat-bubble-neutral whitespace-pre-line">
+        <p>{{ message.content }}</p>
+      </div>
+    </div>
+  }
+}
+}
+```
+
+### 7. Generative UI:
+
+```ts
+import { Component, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { uiChatResource } from '@hashbrownai/angular';
+import { AiMarkdownComponent } from './components/markdowm.component';
+
+@Component({
+  selector: 'app-chat',
+  imports: [FormsModule],
+  templateUrl: './chat.html',
+  styleUrl: './chat.css',
+})
+export class Chat {
+
+  userMessage = signal<string>('');
+  chat = uiChatResource({
+    model: 'gemini-2.5-flash',
+    system: 'You are a helpful assistant that can answer questions and help with tasks.',
+    components: [AiMarkdownComponent],
+  });
+
+  sendMessage() {
+    if (this.userMessage().trim()) {
+      this.chat.sendMessage({ role: 'user', content: this.userMessage() });
+      this.userMessage.set('');
+    }
+  }
+}
+```
+
+```html
+<hb-render-message [message]="message" />
+```
+
+### 8 Tools:
+
+```ts
+import { inject } from '@angular/core';
+import { createTool } from '@hashbrownai/angular';
+import { ProductService, Product } from '../../services/product.service';
+import { lastValueFrom } from 'rxjs';
+
+export const getProductsTool = createTool({
+  name: 'getProducts',
+  description: 'Get all products from the store catalog',
+  handler: async (): Promise<Product[]> => {
+    const productService = inject(ProductService);
+    return await lastValueFrom(productService.getAll());
+  },
+});
+```
+
+```ts
+chat = uiChatResource({
+  model: 'gemini-2.5-flash',
+  system: 'You are a helpful assistant that can answer questions and help with tasks.',
+  tools: [getProductsTool], // Add your tools here
+  components: [AiMarkdownComponent], // Add your components here
+});
+```
+
+
+### 9 UI:
+
+```ts
+chat = uiChatResource({
+  model: 'gemini-2.5-flash',
+  system: 'You are a helpful assistant that can answer questions and help with tasks.',
+  tools: [getProductsTool], // Add your tools here
+  components: [AiMarkdownComponent, AiChatProductListComponent], // Add your components here
+});
 ```
