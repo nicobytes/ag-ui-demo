@@ -8,41 +8,11 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
-import { HashbrownGoogle } from '@hashbrownai/google';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
-
-app.use(express.json());
-
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
-
-app.post('/api/chat', async (req, res) => {
-  const stream = HashbrownGoogle.stream.text({
-    apiKey: process.env['GOOGLE_API_KEY'] ?? '',
-    request: req.body, // must be Chat.Api.CompletionCreateParams
-  });
-
-  res.header('Content-Type', 'application/octet-stream');
-
-  for await (const chunk of stream) {
-    res.write(chunk); // Pipe each encoded frame as it arrives
-  }
-
-  res.end();
-});
 
 /**
  * Serve static files from /browser
