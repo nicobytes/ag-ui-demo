@@ -5,8 +5,7 @@ import { Chat } from './chat/chat';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, Chat],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  templateUrl: './app.html'
 })
 export class App {
 }
