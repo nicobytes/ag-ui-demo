@@ -42,21 +42,21 @@ export class App {
       {
         id: crypto.randomUUID(),
         side: 'start',
-        text: `Hola, ${t}. Tu app está en marcha.`,
+        text: `Hello, ${t}. Your app is up and running.`,
         header: { label: 'App', time: '12:45' },
-        footer: 'Entregado',
+        footer: 'Delivered',
         bubbleVariant: 'primary',
         avatarUrl: ASSISTANT_AVATAR,
-        avatarAlt: 'Avatar del asistente'
+        avatarAlt: 'Assistant avatar'
       },
       {
         id: crypto.randomUUID(),
         side: 'end',
         text: 'You underestimate my power!',
-        header: { label: 'Tú', time: '12:46' },
-        footer: 'Visto 12:46',
+        header: { label: 'You', time: '12:46' },
+        footer: 'Seen 12:46',
         avatarUrl: USER_AVATAR,
-        avatarAlt: 'Avatar del usuario'
+        avatarAlt: 'User avatar'
       },
       {
         id: crypto.randomUUID(),
@@ -64,7 +64,7 @@ export class App {
         text: "It's over Anakin,\nI have the high ground.",
         bubbleVariant: 'neutral',
         avatarUrl: ASSISTANT_AVATAR,
-        avatarAlt: 'Avatar del asistente'
+        avatarAlt: 'Assistant avatar'
       }
     ];
   }
@@ -86,7 +86,7 @@ export class App {
     const text = this.draft().trim();
     if (!text) return;
 
-    const time = new Date().toLocaleTimeString([], {
+    const time = new Date().toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit'
     });
@@ -97,10 +97,10 @@ export class App {
         id: crypto.randomUUID(),
         side: 'end',
         text,
-        header: { label: 'Tú', time },
-        footer: 'Enviado',
+        header: { label: 'You', time },
+        footer: 'Sent',
         avatarUrl: USER_AVATAR,
-        avatarAlt: 'Avatar del usuario'
+        avatarAlt: 'User avatar'
       }
     ]);
     this.draft.set('');
