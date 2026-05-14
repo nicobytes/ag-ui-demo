@@ -77,30 +77,42 @@ export class App {
 ### 6. Send messages:
 
 ```ts
-import { chatResource } from '@hashbrownai/angular';
+import { exposeComponent } from '@hashbrownai/angular';
+import { s } from '@hashbrownai/core';
+import { marked } from 'marked';
+
+import {
+    Component,
+    ViewEncapsulation,
+    computed,
+    inject,
+    input,
+    SecurityContext
+} from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
-  template: `
-    <textarea
-      class="textarea textarea-bordered w-full"
-      rows="3"
-      placeholder="Type a message… (Shift+Enter for new line)"
-      [value]="userMessage()"
-      (input)="userMessage.set($any($event.target).value)"
-    ></textarea>
-    <button class="mt-2 btn btn-primary btn-block" type="button" (click)="sendMessage()">Send</button>
-  `,
+    selector: 'app-markdown',
+    encapsulation: ViewEncapsulation.None,
+    template: ` <div class="ai-markdown" [innerHTML]="html()"></div>`,
+    styleUrls: ['./markdown.component.css'],
 })
-export class App {
-  userMessage = model<string>('');
+export class MarkdownComponent {
+    private readonly sanitizer = inject(DomSanitizer);
 
-  sendMessage() {
-    if (this.userMessage().trim()) {
-      this.chat.sendMessage({ role: 'user', content: this.userMessage() });
-      this.userMessage.set('');
-    }
-  }
+    readonly data = input.required<string>();
+
+    readonly html = computed(() => {
+        const parsed = marked.parse(this.data(), { async: false }) as string;
+        return this.sanitizer.sanitize(SecurityContext.HTML, parsed) ?? '';
+    });
 }
+
+export const AiMarkdownComponent = exposeComponent(MarkdownComponent, {
+    description: 'Show markdown to the user',
+    input: {
+        data: s.streaming.string('The markdown content')
+    }
+});
+
 ```
-
-

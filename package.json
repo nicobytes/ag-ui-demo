@@ -25,6 +25,7 @@
     "@hashbrownai/google": "^0.4.1",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
+    "marked": "^18.0.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
