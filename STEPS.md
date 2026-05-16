@@ -2,7 +2,7 @@
 
 ### 1. Install Hashbrown packages
 
-```bash  
+```bash
 npm install @hashbrownai/{core,angular,google} --save
 npm install @hashbrownai/{core,angular,openai} --save
 ```
@@ -204,7 +204,6 @@ chat = uiChatResource({
 });
 ```
 
-
 ### 9 UI:
 
 ```ts
@@ -215,3 +214,4 @@ chat = uiChatResource({
   components: [AiMarkdownComponent, AiChatProductListComponent], // Add your components here
 });
 ```
+
